@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: demo-mongodb
+  data:
+    mongodb:
+      uri: mongodb+srv://<username>:<password>@<cluster host>
+      database: sample_analytics

@@ -1,0 +1,68 @@
+[
+  {
+    $match: {
+      account_id: 627788
+    }
+  },
+  {
+    $unwind: {
+      path: "$transactions",
+      preserveNullAndEmptyArrays: false
+    }
+  },
+  {
+    $match: {
+      "transactions.symbol": "nvda",
+      "transactions.transaction_code": "buy"
+    }
+  },
+  {
+    $project: {
+      account_id: 1,
+      bucket_start_date: 1,
+      bucket_end_date: 1,
+      amount: "$transactions.amount",
+      transactions_code: "$transactions.transaction_code",
+      symbol: "$transactions.symbol",
+      price: {
+        $toDecimal: "$transactions.price"
+      },
+      total: {
+        $toDecimal: "$transactions.total"
+      }
+    }
+  },
+  {
+    $group: {
+      _id: "$account_id",
+      account_id: {
+        $first: "$account_id"
+      },
+      symbol: {
+        $first: "$symbol"
+      },
+      transaction_code: {
+        $first: "$transactions_code"
+      },
+      transaction_count: {
+        $sum: 1
+      },
+      amount: {
+        $sum: "$amount"
+      },
+      total: {
+        $sum: "$total"
+      }
+    }
+  },
+  {
+    $set: {
+      price: {
+        $divide: [
+          "$total",
+          "$amount"
+        ]
+      }
+    }
+  }
+]

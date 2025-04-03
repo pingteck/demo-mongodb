@@ -1,0 +1,32 @@
+[
+  {
+    $match: {
+      username: "fmiller"
+    }
+  },
+  {
+    $project: {
+      username: 1,
+      accounts: 1
+    }
+  },
+  {
+    $lookup: {
+      from: "accounts",
+      localField: "accounts",
+      foreignField: "account_id",
+      as: "accounts"
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      username: 1,
+      accounts: {
+        account_id: 1,
+        limit: 1,
+        products: 1
+      }
+    }
+  }
+]
