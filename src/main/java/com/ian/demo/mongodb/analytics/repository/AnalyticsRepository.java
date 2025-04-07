@@ -25,6 +25,17 @@ public class AnalyticsRepository {
 
     private final MongoTemplate mongoTemplate;
 
+    /*
+    Exercise 1
+    Implement AnalyticsRepository.getCustomerAccounts()
+
+    Get associated account information under a single customer
+        - customers.username: fmiller
+        - customers.accounts[] -> account_id
+    Hint:
+        - Try using MongoDB Compass to write the aggregation pipeline with:
+            - $match, $project, $lookup, $project
+     */
     public CustomerAccounts getCustomerAccounts(String username) {
         MatchOperation match = Aggregation.match(Criteria.where(Customer.F_USERNAME).is(username));
         ProjectionOperation project1 = Aggregation.project(Customer.F_USERNAME,
@@ -39,6 +50,19 @@ public class AnalyticsRepository {
             .getUniqueMappedResult();
     }
 
+    /*
+    Exercise 2
+    Implement Analytics.getAggregatedTransaction()
+
+    Combine all transactions with the same account ID, symbol and transaction code.
+    Sum amount and sum total to derive price (total / amount = price)
+        - account_id: 627788
+        - symbol: nvda
+        - transaction_code: buy
+    Hint:
+        - Try using MongoDB Compass to write the aggregation pipeline with:
+            - $match, $unwind, $match, $project, $group, $set/$addField
+     */
     public AggregatedTransaction getAggregatedTransaction(Integer accountId, String symbol,
         String transactionCode) {
         MatchOperation matchAccountId = Aggregation.match(
